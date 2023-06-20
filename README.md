@@ -1,5 +1,13 @@
+# Hosts nut-cgi in a container
 
-Quick and dirty container to use NUT in a container: https://networkupstools.org/
 
-```docker run -d -p 8082:80 --device /dev/bus/usb/002/002  galbitz/nut```
+## Configuration
+Environment variables
+- NAME = ups name
+- HOST = server name or IP
 
+This controls the MONITOR line in hosts.conf
+[NUT hosts.conf](https://man.archlinux.org/man/extra/nut/hosts.conf.5.en)
+
+## Example execution
+`docker run -d -p 8082:80 -e NAME=cp -e HOST=192.168.1.17 galbitz/nut`

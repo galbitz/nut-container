@@ -1,11 +1,23 @@
-FROM httpd:2.4
-RUN apt update
-RUN apt install -y nut nut-client nut-server nut-cgi
-RUN apt clean
-RUN a2enmod cgi
-ADD config/* /etc/nut/
-ADD init.d/nut-server /etc/init.d/
-RUN chmod a+x /etc/init.d/nut-server
-ADD apache2/httpd.conf /usr/local/apache2/conf/httpd.conf
-EXPOSE 3493
-CMD ["sh", "-c", "service nut-server start && httpd-foreground"]
+FROM lsiobase/ubuntu:jammy
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ENV \
+	HOME=/config \
+	TZ=UTC
+
+RUN \
+	echo "**** install packages ****" && \
+	apt-get update && \
+	apt-get install -y \
+		nut-cgi && \
+    a2enmod cgi && \
+    echo "I_HAVE_SECURED_MY_CGI_DIRECTORY" >> /etc/nut/upsset.conf && \
+    mkdir -p /var/run/apache2 && \
+	echo "**** clean up ****" && \
+	apt-get clean && \
+	apt-get autoremove && \
+	rm -rf /var/lib/apt/lists/*
+EXPOSE 80
+COPY entrypoint.sh /usr/local/bin/
+ENTRYPOINT /usr/local/bin/entrypoint.sh
